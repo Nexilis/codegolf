@@ -1,3 +1,4 @@
+// run with: dotnet fsi 99bottles.fsx
 let f x = match x with | x when x = 0 -> "No more bottles" | x when x = 1 -> "1 bottle" | x -> sprintf "%i bottles" x
 let b = "of beer on the wall"
 printfn "99 bottles %s, 99 bottles of beer." b
