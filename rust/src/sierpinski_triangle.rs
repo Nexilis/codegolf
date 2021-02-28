@@ -1,30 +1,33 @@
-// clear && rustfmt sierpinski_triangle.rs && rustc sierpinski_triangle && ./sierpinski_triangle
+// clear && rustfmt sierpinski_triangle.rs && rustc sierpinski_triangle.rs && ./sierpinski_triangle
 
 pub fn main() {
     let base: i32 = 2;
     let height: i32 = base.pow(4); // 16
     let width: i32 = base.pow(5); // 32
 
-    let canvas = vec![vec![0; 31]; 16];
-    for mut y in canvas {
-        y[3] = 1;
-        println!("{:?}", y);
-    }
+    let mut canvas = vec![vec![' '; (width - 1) as usize]; height as usize];
 
     for y in 0..height {
         for x in 0..width - 1 {
+            let xu = x as usize;
+            let yu = y as usize;
             if is_bottom(x, y, height) {
-                print!("b")
+                triangle_at(&mut canvas, xu, yu);
             } else if is_left(x, y, height) {
-                print!("l");
+                triangle_at(&mut canvas, xu, yu);
             } else if is_right(x, y, height) {
-                print!("r");
-            } else {
-                print!(" ");
+                triangle_at(&mut canvas, xu, yu);
             }
         }
-        println!();
     }
+    for y in canvas {
+        println!("{:?}", y);
+    }
+}
+
+fn triangle_at(canvas: &mut Vec<Vec<char>>, x: usize, y: usize) {
+    let row = &mut canvas[y];
+    row[x] = '▲';
 }
 
 fn is_bottom(x: i32, y: i32, height: i32) -> bool {
