@@ -1,0 +1,7 @@
+[package]
+name = "sierpinski_triangle"
+version = "0.1.0"
+authors = ["barteklu"]
+edition = "2018"
+
+[dependencies]

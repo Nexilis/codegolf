@@ -1,6 +1,6 @@
 // compile with: rustc fibonacci.rs
 // run with ./fibonacci
-fn main() {
+pub fn main() {
     let mut i = 0;
     let mut j = 1;
     for _ in 0..31 {

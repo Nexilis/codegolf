@@ -1,6 +1,6 @@
 // compile with: rustc 99bottles.rs
 // run with ./99bottles
-fn main() {
+pub fn main() {
     let b = "of beer on the wall";
     println!("99 bottles {}, 99 bottles of beer.", b);
 
