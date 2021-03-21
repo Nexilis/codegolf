@@ -5,71 +5,48 @@
 
 pub fn main() {
     let base: i32 = 2;
-    let width: i32 = base.pow(5); // 32
-    let height: i32 = base.pow(4); // 16
+    let width = (base.pow(5) - 1) as usize; // 31
+    let height = base.pow(4) as usize; // 16
 
-    let mut canvas = vec![vec![' '; (width - 1) as usize]; height as usize];
-    draw_single_triangle_at(&mut canvas, 0, width, 0, height);
+    let mut canvas = vec![vec![' '; width]; height];
+    let start_row = &mut canvas[0];
+    draw_triangle_at(start_row, height - 1);
+    draw_next_row_rec(&mut canvas, 0);
 
     for y in canvas {
         println!("{:?}", y);
     }
-
-    let compressed = vec![
-        15, -1, 14, 1, -1, 13, 3, -1, 12, 1, 1, 1, -1, 11, 7, -1, 10, 1, 5, 1, -1, 9, 3, 3, 3, -1,
-        8, 1, 1, 1, 1, 1, 1, 1, -1, 7, 15, -1, 6, 1, 13, 1, -1, 5, 3, 11, 3, -1, 4, 1, 1, 1, 9, 1,
-        1, 1, -1, 3, 7, 7, 7, -1, 2, 1, 5, 1, 5, 1, 5, 1, -1, 1, 3, 3, 3, 3, 3, 3, 3, -1, 0, 1, 1,
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    ];
-
-    for i in compressed {
-        if i == -1 {
-            println!();
-        } else {
-            for _ in 0..i {
-                print!(" ");
-            }
-            print!("▲");
-        }
-    }
 }
 
-fn draw_single_triangle_at(
-    canvas: &mut Vec<Vec<char>>,
-    start_width: i32,
-    width: i32,
-    start_height: i32,
-    height: i32,
-) {
-    for y in start_height..height {
-        for x in start_width..width - 1 {
-            let xu = x as usize;
-            let yu = y as usize;
+fn draw_next_row_rec(canvas: &mut Vec<Vec<char>>, pos_y: usize) {
+    if pos_y >= 15 {
+        return;
+    }
+    let current_row = &canvas[pos_y];
+    let mut result = vec![];
+    for (pos, e) in current_row.iter().enumerate() {
+        if *e == '▲' {
+            let pos_left = if pos >= 2 { pos - 2 } else { 0 };
+            let two_left = canvas[pos_y][pos_left];
+            if two_left == ' ' {
+                result.push(pos - 1);
+            }
 
-            if is_bottom(x, y, height) {
-                triangle_at(canvas, xu, yu);
-            } else if is_left(x, y, height) {
-                triangle_at(canvas, xu, yu);
-            } else if is_right(x, y, height) {
-                triangle_at(canvas, xu, yu);
+            let pos_right = if pos < 29 { pos + 2 } else { 30 };
+            let two_right = canvas[pos_y][pos_right];
+
+            if two_right == ' ' {
+                result.push(pos + 1);
             }
         }
     }
+    let next_row = &mut canvas[pos_y + 1];
+    for elem in result {
+        draw_triangle_at(next_row, elem);
+    }
+    draw_next_row_rec(canvas, pos_y + 1);
 }
 
-fn triangle_at(canvas: &mut Vec<Vec<char>>, x: usize, y: usize) {
-    let row = &mut canvas[y];
+fn draw_triangle_at(row: &mut Vec<char>, x: usize) {
     row[x] = '▲';
-}
-
-fn is_bottom(x: i32, y: i32, height: i32) -> bool {
-    y == height - 1 && x % 2 == 0
-}
-
-fn is_left(x: i32, y: i32, height: i32) -> bool {
-    x == height - y - 1
-}
-
-fn is_right(x: i32, y: i32, height: i32) -> bool {
-    x == height + y - 1
 }
