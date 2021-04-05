@@ -14,6 +14,14 @@ pub fn main() {
 
 fn calculate_max_concurrent_calls(calls: Vec<Call>) -> i32 {
     let mut max_calls = 0;
+
+    //let mut all_call_dates: Vec<CallDate> = Vec::new();
+
+    for call in calls {
+        // TODO
+        // CallDate { when: DateTime<Utc>, started: bool };
+    }
+
     max_calls
 }
 
