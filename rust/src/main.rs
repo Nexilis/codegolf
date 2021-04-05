@@ -1,5 +1,5 @@
-mod sierpinski_triangle;
+mod overlapping_calls;
 
 fn main() {
-    sierpinski_triangle::main();
+    overlapping_calls::main();
 }
