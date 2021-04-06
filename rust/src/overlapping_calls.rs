@@ -19,10 +19,15 @@ enum CallEvent {
 impl Ord for CallEvent {
     fn cmp(&self, other: &Self) -> Ordering {
         match (self, other) {
-            (CallEvent::Start(x), CallEvent::End(y))
-            | (CallEvent::End(x), CallEvent::Start(y))
-            | (CallEvent::Start(x), CallEvent::Start(y))
-            | (CallEvent::End(x), CallEvent::End(y)) => x.cmp(y),
+            (CallEvent::Start(x), CallEvent::Start(y))
+            | (CallEvent::End(x), CallEvent::End(y))
+            | (CallEvent::Start(x), CallEvent::End(y)) => x.cmp(y),
+            (CallEvent::End(x), CallEvent::Start(y)) => {
+                if x.cmp(y) == Ordering::Equal {
+                    return Ordering::Less;
+                }
+                x.cmp(y)
+            }
         }
     }
 }
@@ -97,18 +102,6 @@ mod tests {
 
         let actual = calculate_max_concurrent_calls(calls);
 
-        // There is an algorithm bug related to calls ordering:
-        // Calls1:
-        // S 2000-01-01T01:00:00Z
-        // E 2000-01-01T02:00:00Z
-        // S 2000-01-01T02:00:00Z
-        // E 2000-01-01T03:00:00Z
-        // Calls2
-        // S 2000-01-01T01:00:00Z
-        // S 2000-01-01T02:00:00Z
-        // E 2000-01-01T02:00:00Z
-        // E 2000-01-01T03:00:00Z
-        // Calls1 gives different result than Calls2, even thought dates are the same in both vectors.
         assert_eq!(actual, 1);
     }
 
