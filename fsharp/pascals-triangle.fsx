@@ -14,7 +14,7 @@ let calcNxtVal arr nxtRow nxtCol =
 let rec gen arr =
     let cur = arr |> List.last
     printf "%i" cur.Val
-    let sumValCur = arr |> List.filter (fun x -> x.Row = cur.Row) |> List.sumBy (fun x -> x.Val) |> float
+    let sumValCur = arr |> List.fold (fun acc x -> if x.Row = cur.Row then acc + x.Val else 0) 0 |> float
     let nxtRow = if sumValCur = 2. ** (float cur.Row) then printfn ""; cur.Row + 1 else printf " "; cur.Row
     let nxtCol = if nxtRow <> cur.Row then 0 else cur.Col + 1
     if nxtRow = 20 then () else gen (arr @ [{Val = calcNxtVal arr nxtRow nxtCol; Row = nxtRow; Col = nxtCol}])
