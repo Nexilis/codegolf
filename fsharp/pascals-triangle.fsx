@@ -1,15 +1,30 @@
 // run with: dotnet fsi pascals-triangle.fsx
 // Print the first 20 rows of Pascal’s triangle.
 
-printfn "1"
-
 type Item = { Value: int; Row: int; Column: int }
+
+let factorial n =
+    let rec loop i acc =
+        match i with
+        | 0
+        | 1 -> acc
+        | _ -> loop (i - 1) (acc * i)
+
+    loop n 1
 
 let calculateValue row column =
     // n = row
     // k = column
     // dwumian Newton'a -> n nad k
-    0
+    let n = row
+    let k = column
+
+    let nBang = factorial n
+    let kBang = factorial k
+    let nMinusKBang = factorial (n - k)
+
+    let denominator = kBang * nMinusKBang
+    nBang / denominator
 
 let rec gen arr =
     let last = arr |> List.last
@@ -37,9 +52,13 @@ let rec gen arr =
 
     let nextValue = calculateValue nextRow nextColumn
 
-    let next = { Value = nextValue; Row = nextRow; Column = nextColumn }
+    let next =
+        { Value = nextValue
+          Row = nextRow
+          Column = nextColumn }
+
     let arr = arr @ [ next ]
-    printfn "next row = %i; column = %i; value = %i" nextRow nextColumn nextValue
+    printfn "row = %i; column = %i; value = %i" nextRow nextColumn nextValue
 
     if nextRow = 20 then () else gen arr
 
