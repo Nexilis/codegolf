@@ -3,54 +3,43 @@
 
 type Item = { Value: int; Row: int; Column: int }
 
-let factorial n =
-    let rec loop i acc =
-        match i with
-        | 0
-        | 1 -> acc
-        | _ -> loop (i - 1) (acc * i)
+let calculateValue (arr: Item list) nextRow nextColumn =
+    let prevRow =
+        arr |> List.filter (fun x -> (x.Row = nextRow - 1))
 
-    loop n 1
+    let left = prevRow |> List.tryFind (fun x -> (x.Column = nextColumn - 1))
+    let right = prevRow |> List.tryFind (fun x -> (x.Column = nextColumn))
 
-let calculateValue row column =
-    // n = row
-    // k = column
-    // dwumian Newton'a -> n nad k
-    let n = row
-    let k = column
-
-    let nBang = factorial n
-    let kBang = factorial k
-    let nMinusKBang = factorial (n - k)
-
-    let denominator = kBang * nMinusKBang
-    nBang / denominator
+    match left, right with
+    | None, None
+    | Some _, None
+    | None, Some _ -> 1
+    | Some l, Some r -> l.Value + r.Value
 
 let rec gen arr =
-    let last = arr |> List.last
-    let currentRow = last.Row
+    let prev = arr |> List.last
 
-    let maxSumOfValuesInCurrentRow = 2.0 ** (float currentRow)
+    let maxSumOfValuesInCurrentRow = 2.0 ** (float prev.Row)
 
     let sumOfValuesInCurrentRow =
         arr
-        |> List.filter (fun x -> x.Row = currentRow)
+        |> List.filter (fun x -> x.Row = prev.Row)
         |> List.fold (fun acc x -> acc + x.Value) 0
         |> float
 
     let nextRow =
         if sumOfValuesInCurrentRow = maxSumOfValuesInCurrentRow then
-            currentRow + 1
+            prev.Row + 1
         else
-            currentRow
+            prev.Row
 
     let nextColumn =
-        if nextRow <> currentRow then
+        if nextRow <> prev.Row then
             0
         else
-            last.Column + 1
+            prev.Column + 1
 
-    let nextValue = calculateValue nextRow nextColumn
+    let nextValue = calculateValue arr nextRow nextColumn
 
     let next =
         { Value = nextValue
