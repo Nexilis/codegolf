@@ -1,57 +1,25 @@
 // run with: dotnet fsi pascals-triangle.fsx
 // Print the first 20 rows of Pascal’s triangle.
 
-type Item = { Value: int; Row: int; Column: int }
+type It = {Val: int; Row: int; Col: int}
 
-let calculateValue (arr: Item list) nextRow nextColumn =
-    let prevRow =
-        arr |> List.filter (fun x -> (x.Row = nextRow - 1))
-
-    let left = prevRow |> List.tryFind (fun x -> (x.Column = nextColumn - 1))
-    let right = prevRow |> List.tryFind (fun x -> (x.Column = nextColumn))
-
-    match left, right with
-    | None, None
-    | Some _, None
-    | None, Some _ -> 1
-    | Some l, Some r -> l.Value + r.Value
+let calcNxtVal arr nxtRow nxtCol =
+    let prevRow = arr |> List.filter (fun x -> (x.Row = nxtRow - 1))
+    let mom = prevRow |> List.tryFind (fun x -> (x.Col = nxtCol - 1))
+    let pap = prevRow |> List.tryFind (fun x -> (x.Col = nxtCol))
+    match mom, pap with
+    | None, None | Some _, None | None, Some _ -> 1
+    | Some m, Some p -> m.Val + p.Val
 
 let rec gen arr =
-    let prev = arr |> List.last
+    let cur = arr |> List.last
+    printf "%i" cur.Val
+    let sumValCur = arr |> List.filter (fun x -> x.Row = cur.Row) |> List.sumBy (fun x -> x.Val) |> float
+    let nxtRow = if sumValCur = 2. ** (float cur.Row) then printfn ""; cur.Row + 1 else printf " "; cur.Row
+    let nxtCol = if nxtRow <> cur.Row then 0 else cur.Col + 1
+    if nxtRow = 20 then () else gen (arr @ [{Val = calcNxtVal arr nxtRow nxtCol; Row = nxtRow; Col = nxtCol}])
 
-    let maxSumOfValuesInCurrentRow = 2.0 ** (float prev.Row)
-
-    let sumOfValuesInCurrentRow =
-        arr
-        |> List.filter (fun x -> x.Row = prev.Row)
-        |> List.fold (fun acc x -> acc + x.Value) 0
-        |> float
-
-    let nextRow =
-        if sumOfValuesInCurrentRow = maxSumOfValuesInCurrentRow then
-            prev.Row + 1
-        else
-            prev.Row
-
-    let nextColumn =
-        if nextRow <> prev.Row then
-            0
-        else
-            prev.Column + 1
-
-    let nextValue = calculateValue arr nextRow nextColumn
-
-    let next =
-        { Value = nextValue
-          Row = nextRow
-          Column = nextColumn }
-
-    let arr = arr @ [ next ]
-    printfn "row = %i; column = %i; value = %i" nextRow nextColumn nextValue
-
-    if nextRow = 20 then () else gen arr
-
-gen [ { Value = 1; Row = 0; Column = 0 } ]
+gen [{Val = 1; Row = 0; Col = 0}]
 (*
     ()
    /  \
