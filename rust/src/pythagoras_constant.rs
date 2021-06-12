@@ -1,6 +1,7 @@
 // compile & run with:
 // clear && rustc pythagoras_constant.rs && ./pythagoras_constant
 // https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Digit-by-digit_calculation
+// https://pl.10steps.org/Calculate-a-Square-Root-by-Hand-9247
 
 fn main() {
     println!("{:?}", (99./70.));
