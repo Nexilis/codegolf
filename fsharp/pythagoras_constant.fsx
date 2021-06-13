@@ -1,42 +1,43 @@
 // run with: clear && dotnet fsi pythagoras_constant.fsx
 // https://pl.10steps.org/Calculate-a-Square-Root-by-Hand-9247
 
+// todo: on arr or string (so it can be used in the first step)
+let calcRes (x: uint64) (y: uint64) : uint64 = x * uint64 (10) + y
 
-let calcMaxSubPair x limit =
-    printfn "input -> %i %i" x limit
-    // w 1 petli x=0 limit=2 -> (1, 1)
-    // w 2 petli x=1 limit=100 -> (4, 4)
-    // w 3 petli x=14 limit=400 -> (1, 119)
-    // w 4 petli x=141 limit=11900 -> (4, 604)
-    // w 5 petli x=1414 limit=60400 -> 2
+// test cases for square root
+// 1) x=0    limit=2     -> (1, 1)
+// 2) x=1    limit=100   -> (4, 4)
+// 3) x=14   limit=400   -> (1, 119)
+// 4) x=141  limit=11900 -> (4, 604)
+// 5) x=1414 limit=60400 -> (2, 383600)
+let calcStep (x: uint64) (limit: uint64) =
+    printfn "-> %i %i" x limit
 
-    let a = x * 2 * 10
-    let mutable max = 1
-    let mutable sub = 0
-    for i in 1..10 do
-        if (a+i) * i <= limit
-        then
+    let a = x * uint64 2 * uint64 10
+    let mutable max = uint64 1
+    let mutable sub = uint64 0
+
+    for i in 0 .. 10 do
+        let i = uint64 i
+
+        if (a + i) * i <= limit then
             // todo: break loop if max found
             max <- i
-            sub <- (limit - (a+i) *i) *100
+            sub <- limit - (a + i) * i
 
-    max, sub
+    if max >= uint64 10 then
+        // todo: this computation method to work, it would have to use much bigger datatype than uint64
+        raise (System.OverflowException())
 
+    max, (sub * uint64 100)
 
-let x2,y2 = calcMaxSubPair 1 100
-printf "result -> %i %i\n\n" x2 y2
+// ENTRY POINT // INPUT VARIABLE
+let squareRootOf = uint64 2
 
-let x3,y3 = calcMaxSubPair 14 400
-printf "result -> %i %i\n\n" x3 y3
+let mutable r, y = calcStep (uint64 0) squareRootOf
 
-let x4,y4 = calcMaxSubPair 141 11900
-printf "result -> %i %i\n\n" x4 y4
-
-let x5,y5 = calcMaxSubPair 1414 60400
-printf "result -> %i %i\n\n" x5 y5
-
-let x1,y1 = calcMaxSubPair 0 2
-printf "result -> %i %i\n\n" x1 y1
-
-for i in 1..5 do
+for _ in 1 .. 20 do
+    let x, yn = calcStep r y
+    y <- yn
+    r <- calcRes r x
     ()
