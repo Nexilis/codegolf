@@ -1,5 +1,5 @@
-mod overlapping_calls;
+mod abundant_numbers;
 
 fn main() {
-    overlapping_calls::main();
+    abundant_numbers::main();
 }
